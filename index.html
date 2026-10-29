@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI 企劃發想工坊</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="中興大學行銷系 AI 企劃發想：把四大策略、ORID 有感文案、六頂思考帽做成詞庫，用 ATM 架構抽卡組合出企劃指令">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: 奶茶金膠囊標頭（呼應投影片）＋分頁；拼裝台左欄是 ATM 三組卡槽，右欄是即時組好的指令；手機上下堆疊 */
+:root{
+  --bg:#f3f3f7; --panel:#ffffff; --ink:#23243a; --muted:#5f6178; --line:#dcdce8;
+  --navy:#3f416f; --navy-ink:#3f416f; --on-navy:#ffffff; --navy-soft:#e8e8f3; --yel:#f1d93c;
+  --tan:#a69072; --on-tan:#ffffff; --tan-soft:#f1ece3; --tan-ink:#7a6648;
+  --org:#dc9a4c; --org-soft:#fbefe0; --olive:#6f6a24;
+  --ga:#3f416f; --ga-soft:#e8e8f3; --gt:#c27a2c; --gt-soft:#fbefe0; --gm:#2f7d6a; --gm-soft:#e1f2ec;
+  --h-white:#ffffff; --h-white-b:#9a9cae; --h-yel:#f5e663; --h-blk:#2f3036; --h-red:#e2483d; --h-grn:#5ccf8f; --h-blu:#2f6bd1;
+  --f-disp:"LXGW WenKai TC","Noto Sans TC","PingFang TC","Microsoft JhengHei",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14151d; --panel:#1f202d; --ink:#ebebf3; --muted:#a4a6ba; --line:#33354a;
+  --navy:#4b4e86; --navy-ink:#aeb1ee; --on-navy:#ffffff; --navy-soft:#262844; --yel:#ecd447;
+  --tan:#86745a; --on-tan:#ffffff; --tan-soft:#2b271f; --tan-ink:#d9c49c;
+  --org:#e7a95f; --org-soft:#382a1a; --olive:#cfc77a;
+  --ga:#aeb1ee; --ga-soft:#262844; --gt:#eba862; --gt-soft:#382a1a; --gm:#6fd2b6; --gm-soft:#16302a;
+  --h-white:#f2f2f6; --h-white-b:#8d8fa3; --h-yel:#ecdc5a; --h-blk:#0d0d10; --h-red:#e8584d; --h-grn:#5ccf8f; --h-blu:#5288e6;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14151d; --panel:#1f202d; --ink:#ebebf3; --muted:#a4a6ba; --line:#33354a;
+  --navy:#4b4e86; --navy-ink:#aeb1ee; --on-navy:#ffffff; --navy-soft:#262844; --yel:#ecd447;
+  --tan:#86745a; --on-tan:#ffffff; --tan-soft:#2b271f; --tan-ink:#d9c49c;
+  --org:#e7a95f; --org-soft:#382a1a; --olive:#cfc77a;
+  --ga:#aeb1ee; --ga-soft:#262844; --gt:#eba862; --gt-soft:#382a1a; --gm:#6fd2b6; --gm-soft:#16302a;
+  --h-white:#f2f2f6; --h-white-b:#8d8fa3; --h-yel:#ecdc5a; --h-blk:#0d0d10; --h-red:#e8584d; --h-grn:#5ccf8f; --h-blu:#5288e6;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65}
+.pad{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2,h3,h4{text-wrap:balance;margin:0}
+p{margin:0}
+button{font:inherit;color:inherit}
+button,input{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+:focus-visible{outline:2px solid var(--org);outline-offset:2px}
+
+/* 標頭 */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--panel)}
+.masthead{padding-block:30px 26px;background:var(--navy);color:var(--on-navy);position:relative;overflow:hidden}
+.masthead::before,.masthead::after{content:"";position:absolute;border-radius:50%;background:var(--tan);opacity:.55}
+.masthead::before{width:220px;height:220px;left:-90px;top:-110px}
+.masthead::after{width:160px;height:160px;right:-50px;bottom:-90px}
+.mast{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end}
+.eyebrow{font-size:12.5px;letter-spacing:.18em;font-weight:700;color:var(--yel)}
+.mast h1{font-family:var(--f-disp);font-size:clamp(30px,5vw,50px);font-weight:700;letter-spacing:.08em;line-height:1.2;margin-top:4px}
+.mast p{margin-top:8px;max-width:60ch;opacity:.92}
+.legend{display:flex;gap:8px;flex-wrap:wrap}
+.key{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border-radius:10px;background:var(--panel);color:var(--ink);border:2.5px solid var(--org)}
+.key b{font-size:17px;font-weight:900;width:28px;height:28px;display:grid;place-items:center;border-radius:6px;color:#fff}
+.key.a b{background:#3f416f}.key.t b{background:#c27a2c}.key.m b{background:#2f7d6a}
+.key span{font-size:13px;line-height:1.3;font-weight:700}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:25;background:var(--panel);border-block:1px solid var(--line)}
+.nav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.nav .wrap::-webkit-scrollbar{display:none}
+.nav button{flex:none;background:none;border:0;border-bottom:3px solid transparent;padding:12px 14px 10px;cursor:pointer;font-size:14.5px;color:var(--muted);white-space:nowrap}
+.nav button[aria-selected="true"]{color:var(--ink);font-weight:700;border-bottom-color:var(--org)}
+main{padding-block:26px 80px}
+.view-head{margin-bottom:18px;display:flex;gap:14px 20px;align-items:end;flex-wrap:wrap}
+.view-head > div{flex:1 1 380px;min-width:0}
+.pill-title{display:inline-block;font-family:var(--f-disp);font-weight:700;font-size:clamp(20px,2.8vw,26px);letter-spacing:.12em;background:var(--tan);color:var(--on-tan);padding:4px 22px;border-radius:999px}
+.view-head p{margin-top:10px;color:var(--muted);max-width:70ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.note{font-size:12.5px;color:var(--muted)}
+
+/* 共用按鈕 */
+.btn{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--panel);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;font-weight:700}
+.btn:hover{border-color:var(--org)}
+.btn.primary{background:var(--org);border-color:var(--org);color:#fff}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.navy{background:var(--navy);border-color:var(--navy);color:var(--on-navy)}
+.btn.sm{padding:4px 10px;font-size:13px;border-radius:8px}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+
+/* 拼裝台 */
+.builder{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start}
+.slots{display:grid;gap:16px;min-width:0}
+.group{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;min-width:0}
+.group-h{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line)}
+.group-h .tag{font-weight:900;font-size:20px;width:34px;height:34px;display:grid;place-items:center;border-radius:8px;color:#fff;flex:none}
+.group.a .tag{background:#3f416f}.group.t .tag{background:#c27a2c}.group.m .tag{background:#2f7d6a}
+.group-h h3{font-size:16px;font-weight:900}
+.group-h small{color:var(--muted);font-size:13px}
+.slot{padding:12px 16px 14px;border-top:1px dashed var(--line)}
+.slot:first-of-type{border-top:0}
+.slot-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.slot-h h4{font-size:14px;font-weight:700;margin-right:auto}
+.slot-h h4 em{font-style:normal;font-weight:400;color:var(--muted);font-size:12.5px;margin-left:6px}
+.mission-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--tan-soft);border:1.5px solid var(--tan);border-radius:12px;padding:8px 12px;font-size:13.5px}
+.mission-bar[hidden]{display:none}
+.mission-bar b{color:var(--tan-ink)}
+.mission-bar span{flex:1;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border:1.5px solid var(--line);background:var(--panel);border-radius:9px;padding:6px 11px;font-size:14px;cursor:pointer;line-height:1.35;text-align:left;transition:transform .12s,background .12s,border-color .12s}
+.chip:hover{border-color:var(--org)}
+.chip small{display:block;font-size:11.5px;color:var(--muted)}
+.group.a .chip[aria-pressed="true"]{background:var(--ga-soft);border-color:var(--ga);color:var(--ga);font-weight:700}
+.group.t .chip[aria-pressed="true"]{background:var(--gt-soft);border-color:var(--gt);color:var(--gt);font-weight:700}
+.group.m .chip[aria-pressed="true"]{background:var(--gm-soft);border-color:var(--gm);color:var(--gm);font-weight:700}
+.chip[aria-pressed="true"] small{color:inherit;opacity:.85;font-weight:400}
+.chip.flash{transform:scale(1.06);border-color:var(--org);background:var(--org-soft)}
+.chip.hat{display:inline-flex;align-items:center;gap:7px}
+.hat-dot{width:16px;height:16px;border-radius:50%;flex:none;border:1.5px solid var(--h-white-b)}
+.custom{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+.custom input{flex:1 1 200px;min-width:0;border:1.5px solid var(--line);border-radius:9px;padding:6px 10px;font:inherit;font-size:14px;background:var(--panel);color:var(--ink)}
+.custom input:focus{border-color:var(--org);outline:none}
+.strat-ex{margin-top:8px;font-size:13px;color:var(--olive);font-weight:700}
+
+.out{position:sticky;top:calc(env(safe-area-inset-top,0px) + 60px);display:grid;gap:14px;min-width:0}
+.spin-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.spin-bar .btn.primary{font-size:16px;padding:10px 18px}
+.prompt-card{background:var(--panel);border:2.5px solid var(--org);border-radius:16px;overflow:hidden;min-width:0}
+.prompt-h{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--org-soft);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.prompt-h strong{margin-right:auto;font-size:14.5px}
+.prompt-body{padding:14px 16px;max-height:min(62vh,640px);overflow:auto;font-size:14px;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.prompt-body .sec{display:inline-block;font-weight:900;padding:0 8px;border-radius:6px;color:#fff;margin-top:4px}
+.prompt-body .sa{background:#3f416f}.prompt-body .st{background:#c27a2c}.prompt-body .sm{background:#2f7d6a}
+.prompt-body mark{background:none;color:var(--org);font-weight:700}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{font-size:12.5px;padding:3px 10px;border-radius:999px;border:1.5px dashed var(--line);color:var(--muted)}
+.badge.on{border-style:solid;border-color:var(--org);background:var(--org-soft);color:var(--ink);font-weight:700}
+.meta-row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.meta-row h4{font-size:13.5px}
+
+.modal{position:fixed;inset:0;z-index:50;background:rgba(10,10,20,.6);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal[hidden]{display:none}
+.modal-box{background:var(--panel);color:var(--ink);border-radius:16px;padding:16px;width:min(960px,100%);max-height:100%;overflow:auto;display:grid;gap:12px}
+.modal-box img{width:100%;height:auto;border:1px solid var(--line);border-radius:8px;display:block}
+.modal-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.modal-row strong{margin-right:auto}
+
+/* 素材圖鑑 */
+.sec-title{font-family:var(--f-disp);font-size:22px;font-weight:700;letter-spacing:.08em;margin:34px 0 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sec-title:first-child{margin-top:0}
+.sec-title small{font-family:var(--f-body);font-size:13px;color:var(--muted);font-weight:400;letter-spacing:0}
+.strats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.strat{display:flex;flex-direction:column;gap:10px}
+.strat .frame{align-self:flex-start;font-family:var(--f-disp);font-size:24px;font-weight:700;border:3px solid var(--org);padding:0 12px;letter-spacing:.12em}
+.strat .def{font-size:13.5px;color:var(--muted)}
+.strat .ex{font-weight:700;color:var(--olive);font-size:14.5px;line-height:1.55}
+.strat .guess{border-top:1px dashed var(--line);padding-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.strat .guess input{flex:1 1 120px;min-width:0;border:1.5px solid var(--line);border-radius:8px;padding:4px 8px;font:inherit;font-size:13px;background:var(--panel);color:var(--ink)}
+.strat .words{display:flex;flex-wrap:wrap;gap:5px}
+.strat .words span{font-size:12.5px;padding:2px 8px;border-radius:6px;background:var(--gt-soft);color:var(--gt);font-weight:700}
+
+.orid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.oq{background:var(--navy);color:var(--on-navy);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:6px}
+.oq h4{font-size:19px;font-weight:700}
+.oq h4 b{font-family:var(--f-disp);font-size:24px;margin-right:4px;color:var(--yel)}
+.oq ul{margin:4px 0 0;padding-left:1.2em;color:var(--yel)}
+.oq .use{font-size:12.5px;opacity:.85;margin-top:auto;padding-top:6px}
+
+.hats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hatc{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start}
+.hatc svg{width:58px;height:40px}
+.hatc h4{font-size:16px}
+.hatc p{font-size:13.5px;color:var(--muted)}
+.hatc .ask{color:var(--ink);font-size:13px;margin-top:4px}
+
+/* 任務 */
+.missions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.mission{display:flex;flex-direction:column;gap:10px;position:relative}
+.mission .lv{font-size:12px;font-weight:700;color:var(--tan-ink);letter-spacing:.08em}
+.mission h4{font-family:var(--f-disp);font-size:21px;font-weight:700}
+.mission .brief{font-size:14px}
+.mission .rules{display:flex;flex-wrap:wrap;gap:5px}
+.mission .rules span{font-size:12.5px;padding:2px 8px;border-radius:6px;background:var(--tan-soft);color:var(--tan-ink);font-weight:700}
+.mission .btn{margin-top:auto;align-self:flex-start}
+.mission .pic{display:block;width:100%;height:auto;aspect-ratio:16/10;max-width:100%;border-radius:10px}
+.mission .stage{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--navy);color:var(--on-navy);letter-spacing:.06em}
+.mission .head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.reveal{border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.6}
+.strat .reveal{background:var(--org-soft);border:1px solid var(--org)}
+.strat .reveal b{display:block;font-size:15px}
+.strat .reveal .ok{color:var(--gm);font-weight:700}
+.oq ul{list-style:none;padding:0;display:grid;gap:4px}
+.oq li button{all:unset;cursor:pointer;color:var(--yel);display:block;padding:3px 8px;margin-left:-8px;border-radius:8px;font-weight:500}
+.oq li button:hover,.oq li button[aria-pressed="true"]{background:rgba(255,255,255,.12)}
+.oq li button:focus-visible{outline:2px solid var(--yel)}
+.oq li button::before{content:"▸ ";opacity:.7}
+.oq .case{background:rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.6}
+.oq .case b{color:var(--yel)}
+.hatc{cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+.hatc:hover{border-color:var(--org)}
+.hatc .act{grid-column:1/-1;background:var(--gm-soft);border-radius:10px;padding:10px 12px;font-size:13.5px}
+.hatc .act b{color:var(--gm)}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--panel);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:40;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{padding-block:20px 30px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line)}
+
+@media (max-width:980px){
+  .builder{grid-template-columns:minmax(0,1fr)}
+  .out{position:static}
+  .strats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .missions{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:620px){
+  .mast{grid-template-columns:minmax(0,1fr)}
+  .strats,.missions,.hats,.orid{grid-template-columns:minmax(0,1fr)}
+  .prompt-body{max-height:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<style>body{margin:0}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
+
+<header class="masthead pad">
+  <div class="wrap mast">
+    <div>
+      <div class="eyebrow">中興大學行銷學系 ・ #AI品牌企劃發想</div>
+      <h1>AI 企劃發想工坊</h1>
+      <p>把課堂上的四大策略、有感文案 ORID、六頂思考帽變成一副詞庫卡。用 ATM 架構抽卡、鎖卡、混搭，每一次組合都是一道新的企劃指令。</p>
+    </div>
+    <div class="legend" aria-label="ATM 指令架構">
+      <div class="key a"><b>A</b><span>角色<br>你是誰</span></div>
+      <div class="key t"><b>T</b><span>目標<br>要做什麼</span></div>
+      <div class="key m"><b>M</b><span>方法<br>怎麼做</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="nav pad" aria-label="分頁">
+  <div class="wrap" role="tablist">
+    <button role="tab" id="tab-build" aria-selected="true" data-view="build">指令拼裝台</button>
+    <button role="tab" id="tab-bank" aria-selected="false" data-view="bank">素材圖鑑</button>
+    <button role="tab" id="tab-mission" aria-selected="false" data-view="mission">挑戰任務</button>
+  </div>
+</nav>
+
+<main class="pad">
+  <div class="wrap">
+
+    <!-- 拼裝台 -->
+    <section id="view-build">
+      <div class="view-head">
+        <div>
+          <span class="pill-title">指令拼裝台</span>
+          <p>每一列是一組詞庫卡。點卡片自己選，或按該列的「抽」讓它隨機，想整組重來就按「全部轉蛋」。右邊的指令會即時組好，複製貼到 ChatGPT、Gemini 或 Claude 就能用。</p>
+        </div>
+      </div>
+      <div class="builder">
+        <div class="slots" id="slots"></div>
+        <aside class="out">
+          <div class="spin-bar">
+            <button class="btn primary" id="spinAll" type="button">🎲 全部轉蛋</button>
+          </div>
+          <div class="mission-bar" id="missionBar" hidden><b>任務中</b><span id="missionText"></span><button class="btn sm" type="button" id="endMission">結束任務</button></div>
+          <div class="prompt-card">
+            <div class="prompt-h">
+              <strong>你的企劃指令</strong>
+              <button class="btn sm navy" id="copyBtn" type="button">複製指令</button>
+              <button class="btn sm" id="pngBtn" type="button">下載 16:9 圖檔</button>
+            </div>
+            <div class="prompt-body" id="prompt" aria-live="polite"></div>
+          </div>
+          <div class="card">
+            <div class="meta-row"><h4>組合成就</h4><span class="note" id="badgeCount"></span></div>
+            <div class="badges" id="badges" style="margin-top:8px"></div>
+            <p class="note" style="margin-top:8px">特定的卡片搭在一起會解鎖成就。解鎖過的會留在這台裝置上。</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 素材圖鑑 -->
+    <section id="view-bank" hidden>
+      <div class="view-head">
+        <div>
+          <span class="pill-title">素材圖鑑</span>
+          <p>拼裝台裡每一張卡都來自這三套工具。猜猜四大策略的品牌、點 ORID 的問句看品牌案例、點思考帽拿一個品牌小行動。</p>
+        </div>
+      </div>
+
+      <h3 class="sec-title">企劃發想四大策略 <small>T 目標的「切入策略」卡</small></h3>
+      <div class="strats" id="stratCards"></div>
+
+      <h3 class="sec-title">有感文案架構 ORID <small>M 方法的「文案架構」卡</small></h3>
+      <div class="orid" id="oridCards"></div>
+
+      <h3 class="sec-title">完善企劃六種思考 <small>M 方法的「思考帽」卡</small></h3>
+      <div class="hats" id="hatCards"></div>
+    </section>
+
+    <!-- 任務 -->
+    <section id="view-mission" hidden>
+      <div class="view-head">
+        <div>
+          <span class="pill-title">挑戰任務</span>
+          <p>品牌從創立到成熟，每個階段要解的題目都不一樣。每張任務卡會帶入指定條件，其他卡由你抽或自己選；任務進行中按「全部轉蛋」不會換掉任務條件。</p>
+        </div>
+        <button class="btn primary" id="randMission" type="button">🎴 隨機抽一張任務</button>
+      </div>
+      <div class="missions" id="missions"></div>
+
+    </section>
+  </div>
+</main>
+
+<footer class="pad"><div class="wrap">AI 企劃發想工坊 ・ 教材內容依課程投影片整理；範例品牌與題材為教學用途，數據請自行查證。</div></footer>
+
+<div class="modal" id="pngModal" hidden role="dialog" aria-modal="true" aria-labelledby="pngTitle">
+  <div class="modal-box">
+    <div class="modal-row"><strong id="pngTitle">企劃指令卡（1920×1080 PNG）</strong>
+      <a class="btn sm navy" id="pngDl" download="企劃指令卡.png" href="#">下載 PNG</a>
+      <button class="btn sm" type="button" id="pngClose">關閉</button></div>
+    <img id="pngImg" alt="組好的企劃指令卡，16:9 圖片">
+    <p class="note">如果按「下載 PNG」沒有反應，請在圖片上按右鍵選「另存圖片」，手機請長按圖片儲存。</p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+const STRATS = [
+  {id:'emo', ans:{brand:'Absolut 絕對伏特加', alias:['absolut','絕對伏特加','絕對','伏特加'], why:'推出一系列城市限定瓶，例如芝加哥、溫哥華、特拉維夫，每座城市的瓶身圖案都不一樣。細微差異讓人想一座城一座城收集下去。'}, name:'情感', def:'喚起情緒與回憶，給人收藏與連結的理由', ex:'各個都市限定，能觀察細微差異的紀念瓶',
+   tactics:['地方限定','收藏回憶','陪伴感','儀式感','懷舊時光']},
+  {id:'fun', ans:{brand:'Zippo 打火機', alias:['zippo','芝寶','zipo'], why:'越戰時幾乎是美軍人手一個，流傳著替士兵擋下子彈、泡水甚至從水底撈起後仍點得著的故事。品牌把「耐用」說成一則則傳奇。'}, name:'有趣', def:'用故事、反差或互動製造話題，讓人忍不住分享', ex:'沉在河底多年，救過許多越戰士兵的打火機',
+   tactics:['真實傳奇故事','反差驚喜','互動挑戰','隱藏彩蛋','迷因梗']},
+  {id:'use', ans:{brand:'志祺七七',alias:['志祺','七七','77','簡訊設計'], why:'台灣的時事 YouTube 頻道，標語是「每周 7 天、每天 7 點、每次 7 分鐘」，用短短幾分鐘把複雜議題整理清楚。'}, name:'實用', def:'直接解決問題、幫人省時間，讓人覺得「有用」', ex:'每天帶你用 7 分鐘的時間，全面掌握一個時事',
+   tactics:['省時','懶人包','一看就懂','解決痛點','馬上能用']},
+  {id:'taste', ans:{open:true, brand:'沒有標準答案', why:'品味因人而異。說說你關注的品牌或自媒體：它的哪一點讓你覺得「懂我」？是美感、態度，還是你想成為的那種人？這個答案就是品味策略的切入點。'}, name:'品味', def:'展現美感與態度，讓人覺得「懂我」、想被看見和它在一起', ex:'關注哪個品牌 or 自媒體，讓你覺得特別有意思',
+   tactics:['美學風格','圈內認同','聯名跨界','價值主張','限量質感']}
+];
+const ORID = [
+  {id:'O', en:'Objective', name:'客觀事實', qs:['看到什麼？','發生什麼事？','記得什麼？'], cases:[
+    ['IKEA 樣品間','門市把沙發、床、收納直接布置成一間間真實的房間。顧客「看到」的是自己未來的家，而不只是一件家具。'],
+    ['Dove「真美素描」','2013 年請 FBI 素描畫家分別依女性的自我描述、以及陌生人的描述各畫一張肖像。兩張畫並排「發生」的落差，就是最有力的事實。'],
+    ['大同電鍋','「大同大同國貨好」的廣告歌加上外婆家的那一鍋，讓好幾代台灣人「記得」它。品牌把共同記憶變成信任。']], use:'先把場景與細節講清楚，文案才有畫面。'},
+  {id:'R', en:'Reflective', name:'感受反應', qs:['有什麼情緒？','有什麼感覺？','喜歡 & 不喜歡什麼？'], cases:[
+    ['大眾銀行《夢騎士》','2011 年的廣告拍一群平均 81 歲的長輩騎機車環島。觀眾的鼻酸與熱血，比任何利率數字都更讓人記得這家銀行。'],
+    ['無印良品 MUJI','沒有大 Logo、素色簡單的商品，給人「這樣就好」的自在感。品牌賣的是一種讓人放鬆的感覺。'],
+    ['全聯「經濟美學」','年輕人不喜歡「便宜＝不酷」的印象。全聯把省錢說成一種有型的生活態度，把「不喜歡」翻轉成「喜歡」。']], use:'找出受眾心裡真正的情緒，文案才打得中。'},
+  {id:'I', en:'Interpretive', name:'意義詮釋', qs:['是什麼讓你有這些感受？','這讓你連結到生活經驗的？','這對你而言的意義是什麼？'], cases:[
+    ['Nike「Just Do It」','感動人的不是鞋子，而是運動員咬牙撐下去的那一刻。Nike 讓人把那份感受連到「我也可以」。'],
+    ['可口可樂「分享瓶」','把瓶身上的 Logo 換成常見的名字和稱呼，讓人想起朋友和家人，一瓶可樂就連結到自己的生活。'],
+    ['Patagonia「別買這件外套」','2011 年黑色星期五刊登整版廣告勸大家別買不需要的東西。買 Patagonia 的意義從「買外套」變成「支持環境」。']], use:'把感受連到生活與價值，品牌才有記憶點。'},
+  {id:'D', en:'Decision', name:'行動決定', qs:['有什麼可以改變的地方？','接下來的行動／計畫會是什麼？','需要什麼資源或支持？'], cases:[
+    ['Domino\'s 披薩大翻身','2009 年公開承認顧客嫌披薩難吃，整個配方重做，還把改變的過程拍成廣告，承認問題反而贏回信任。'],
+    ['漢堡王「Whopper Detour」','2018 年請顧客走到麥當勞附近用 App 下單，就能用 1 美分買華堡。下一步該做什麼，寫得清清楚楚又好玩。'],
+    ['TOMS「買一捐一」','每賣出一雙鞋就捐一雙給需要的孩子。顧客知道自己的購買就是那份「支持」，行動有了理由。']], use:'最後給受眾一個明確的下一步。'}
+];
+const HATS = [
+  {id:'white', acts:[["比菲多", "在便利商店冷藏櫃前觀察 30 分鐘，記下誰拿起、誰放回去，用數據找出真正的購買者。"], ["十二月粥品", "整理三個月內晚上 10 點後的來客數與熱銷品項，確認深夜客群有多大。"], ["獨立書店", "統計一週內進店沒買書的人數與停留時間，找出流失在哪一步。"]], name:'白帽', color:'var(--h-white)', def:'中立客觀，追求事實和數據', ask:'這個企劃需要哪些事實與數據佐證？'},
+  {id:'yellow', acts:[["比菲多", "把「從小喝到大」變成優勢，做一組「你第一次喝是幾歲？」的懷舊互動貼文。"], ["十二月粥品", "把營業到凌晨包裝成加班族的「深夜避風港」，強調現點現煮的溫度。"], ["台中巷弄咖啡館", "把「巷子裡很難找」變成尋寶樂趣，設計一張手繪尋店地圖。"]], name:'黃帽', color:'var(--h-yel)', def:'樂觀濾鏡，積極看見益處', ask:'這個方向最大的好處與機會是什麼？'},
+  {id:'black', acts:[["比菲多", "推出聯名限定瓶前，先估算滯銷與退貨風險，訂好停損點。"], ["十二月粥品", "做外送前先測試粥放 30 分鐘後的口感，避免外送負評。"], ["中興大學校慶", "預先準備下雨備案和人潮動線，避免活動當天塞爆。"]], name:'黑帽', color:'var(--h-blk)', def:'批判思維，考慮風險與問題', ask:'可能踩到哪些雷？預算、輿論、執行有什麼風險？'},
+  {id:'red', acts:[["純粹喝", "把兩款新包裝給 10 位同學看 3 秒，問他們第一直覺會拿哪一瓶。"], ["十二月粥品", "第一次走進店裡時，寫下聞到、聽到的三個形容詞，當作文案素材。"], ["獨立書店", "請 5 位路人用一句話說出走進店裡的第一感受。"]], name:'紅帽', color:'var(--h-red)', def:'遵循直覺，基於情感直觀判斷', ask:'受眾第一眼看到會有什麼直覺感受？'},
+  {id:'green', acts:[["比菲多", "把瓶身變成「今日心情」貼紙，讓人拍照打卡、交換收集。"], ["十二月粥品", "推出「十二個月份限定粥」，每個月用一種當季食材，讓人想每月回訪。"], ["秋雅即飲醋", "把「醋」玩成梗，拍一支「吃醋情侶」短影音。"]], name:'綠帽', color:'var(--h-grn)', def:'創意有生機，富有創造力', ask:'還有什麼更大膽、沒人做過的玩法？'},
+  {id:'blue', acts:[["比菲多", "把新品上市拆成預熱、上市、延燒三週，每週指定負責人與檢核指標。"], ["十二月粥品", "排出開學季活動的時程表，從貼文、店內布置到會員回訪一次排好。"], ["中興大學校慶", "列出報名、宣傳、現場、活動後回饋四個階段的分工表。"]], name:'藍帽', color:'var(--h-blu)', def:'能綜觀全局，安排計劃步驟', ask:'整體時程、分工與執行步驟怎麼排？'}
+];
+
+const SLOTS = [
+  {group:'a', key:'role', label:'角色', hint:'品牌企劃專業人士／知名人物', items:[
+    {id:'strategist', tag:'專業', name:'品牌策略總監', desc:'擅長品牌定位與差異化，能把市場洞察收斂成一句品牌主張'},
+    {id:'cd', tag:'專業', name:'廣告創意總監', desc:'帶過多支得獎廣告，擅長把品牌主張變成讓人記得住的大創意（Big Idea）'},
+    {id:'insight', tag:'專業', name:'消費者洞察研究員', desc:'擅長訪談與觀察，能挖出受眾沒說出口的需求'},
+    {id:'imc', tag:'專業', name:'整合行銷傳播經理', desc:'熟悉電視、社群、通路與公關的整合操作，擅長安排傳播節奏與預算'},
+    {id:'cx', tag:'專業', name:'品牌體驗設計師', desc:'擅長設計門市、快閃店與活動的現場體驗，讓品牌被「感受」到'},
+    {id:'liang', tag:'系友', famous:true, name:'梁家銘', desc:'興大農產運銷系（今行銷學系）校友，台灣比菲多企業集團董事長，從零打造比菲多、植物的優、純粹喝、秋雅等品牌；他主張行銷是品牌的核心競爭力，資源有限時要避免編列試錯預算、快速開創形成良性循環'},
+    {id:'kotler', tag:'名人', famous:true, name:'菲利普・科特勒', desc:'現代行銷學之父，習慣先用 STP（市場區隔、目標市場、定位）想清楚，再用行銷組合落地'},
+    {id:'ogilvy', tag:'名人', famous:true, name:'大衛・奧格威', desc:'廣告教父，重視消費者研究與品牌形象，相信好廣告要能真正賣出商品'},
+    {id:'godin', tag:'名人', famous:true, name:'賽斯・高汀', desc:'《紫牛》作者，主張產品本身要與眾不同、值得被談論，並鎖定最在乎的一小群人'},
+    {id:'sinek', tag:'名人', famous:true, name:'賽門・西奈克', desc:'提出黃金圈理論，主張品牌要從 Why（為什麼存在）說起，再談 How 與 What'},
+    {id:'sato', tag:'名人', famous:true, name:'佐藤可士和', desc:'日本品牌設計師，曾操刀 UNIQLO、7-ELEVEN 自有商品等品牌設計，擅長把品牌精神濃縮成簡潔一致的視覺'},
+    {id:'sun', tag:'名人', famous:true, name:'孫大偉', desc:'台灣廣告人，以溫暖、貼近生活的廣告文案打動人心，擅長從日常小事找到情感共鳴'}
+  ]},
+  {group:'t', key:'topic', label:'企劃題材', hint:'要幫什麼做企劃', custom:true, items:[
+    {id:'bifido', tag:'系友企業', name:'比菲多乳酸飲料'},
+    {id:'plant', tag:'系友企業', name:'植物的優優格'},
+    {id:'pure', tag:'系友企業', name:'純粹喝咖啡與奶茶'},
+    {id:'chiuya', tag:'系友企業', name:'秋雅即飲醋'},
+    {id:'congee', name:'十二月粥品', local:true},
+    {id:'cafe', name:'台中巷弄咖啡館', local:true},
+    {id:'brunch', name:'興大周邊早午餐店', local:true},
+    {id:'fest', name:'中興大學校慶', local:true},
+    {id:'books', name:'獨立書店'},
+    {id:'tea', name:'手搖飲秋季新品'},
+    {id:'gift', name:'台中文創伴手禮', local:true},
+    {id:'pet', name:'寵物鮮食品牌'}
+  ]},
+  {group:'t', key:'aud', label:'目標受眾', hint:'說給誰聽', items:[
+    {id:'fresh', name:'大一新生', desc:'剛到台中，對校園周邊一切都好奇'},
+    {id:'gz', name:'Z 世代社群重度使用者', desc:'一天滑手機 6 小時，討厭硬廣告'},
+    {id:'office', name:'通勤上班族', desc:'時間零碎、壓力大，想要省時省力'},
+    {id:'family', name:'親子家庭', desc:'週末找能帶小孩一起去的地方'},
+    {id:'senior', name:'銀髮族', desc:'時間多、重視健康與人情味'},
+    {id:'tourist', name:'外地觀光客', desc:'第一次來台中，想帶點有故事的東西回家'},
+    {id:'petown', name:'寵物飼主', desc:'把毛孩當家人，願意為牠花錢'}
+  ]},
+  {group:'t', key:'goal', label:'企劃目的', hint:'做完要看到什麼結果', items:[
+    {id:'aware', name:'打開知名度'},
+    {id:'first', name:'帶動第一次購買'},
+    {id:'repeat', name:'提高回購與忠誠'},
+    {id:'signup', name:'衝高活動報名人數'},
+    {id:'share', name:'創造社群互動與分享'},
+    {id:'image', name:'升級品牌形象'}
+  ]},
+  {group:'t', key:'strat', label:'切入策略', hint:'企劃發想四大策略', items:STRATS.map(s=>({id:s.id,name:s.name,desc:s.def}))},
+  {group:'t', key:'tactics', label:'策略關鍵詞', hint:'最多選 2 張', multi:2, dyn:true},
+  {group:'m', key:'orid', label:'文案架構 ORID', hint:'至少 1 張，全開最完整', multi:4, min:1, items:ORID.map(o=>({id:o.id,name:o.id+' '+o.name,desc:o.en}))},
+  {group:'m', key:'hats', label:'思考帽', hint:'最多 2 頂，用來檢視企劃', multi:2, hat:true, items:HATS.map(h=>({id:h.id,name:h.name,desc:h.def}))},
+  {group:'m', key:'fmt', label:'產出格式', hint:'要 AI 交出什麼', items:[
+    {id:'three', name:'3 個企劃方向比較表', desc:'用表格比較 3 個方向的核心創意、亮點、執行難度與預估效果'},
+    {id:'onepage', name:'一頁式活動企劃書', desc:'包含背景、目標、受眾、核心創意、執行步驟、時程、預算概估與成效指標'},
+    {id:'ig', name:'IG 輪播貼文 5 張', desc:'每張寫出標題、內文與畫面描述，最後一張放行動呼籲'},
+    {id:'reel', name:'30 秒短影音腳本', desc:'用分鏡表列出秒數、畫面、旁白／字幕與音效'},
+    {id:'slogan', name:'10 句 Slogan', desc:'每句不超過 15 字，並標註各自用到的切入角度'},
+    {id:'poster', name:'海報文案＋視覺描述', desc:'寫出主標、副標、內文與畫面構圖、配色建議'}
+  ]}
+];
+const GROUPS = {a:{tag:'A', name:'角色', sub:'請 AI 扮演誰'}, t:{tag:'T', name:'目標', sub:'為誰、做什麼、怎麼切入'}, m:{tag:'M', name:'方法', sub:'用什麼架構想、交出什麼'}};
+
+const BADGES = [
+  {id:'balance', name:'攻守兼備', how:'黃帽＋黑帽', test:s=>s.hats.includes('yellow')&&s.hats.includes('black')},
+  {id:'calm', name:'冷靜的瘋子', how:'白帽＋綠帽', test:s=>s.hats.includes('white')&&s.hats.includes('green')},
+  {id:'feel', name:'有感文案師', how:'情感策略＋ORID 全開', test:s=>s.strat==='emo'&&s.orid.length===4},
+  {id:'twist', name:'反差萌', how:'有趣策略＋銀髮族或親子家庭', test:s=>s.strat==='fun'&&(s.aud==='senior'||s.aud==='family')},
+  {id:'saver', name:'懶人救星', how:'實用策略＋通勤上班族', test:s=>s.strat==='use'&&s.aud==='office'},
+  {id:'curate', name:'品味策展人', how:'品味策略＋佐藤可士和或品牌體驗設計師', test:s=>s.strat==='taste'&&(s.role==='sato'||s.role==='cx')},
+  {id:'alumni', name:'系友傳承', how:'梁家銘＋系友企業題材', test:s=>s.role==='liang'&&!!(byId('topic',s.topic)||{}).tag},
+  {id:'local', name:'在地之光', how:'在地題材＋地方限定', test:s=>!!(byId('topic',s.topic)||{}).local&&s.tactics.includes('地方限定')},
+  {id:'boss', name:'全局掌控', how:'藍帽＋一頁式活動企劃書', test:s=>s.hats.includes('blue')&&s.fmt==='onepage'},
+  {id:'own', name:'自帶題目', how:'自訂企劃題材', test:s=>s.topic==='custom'&&!!s.customTopic.trim()}
+];
+
+const MISSIONS = [
+  {stage:'創立期', goal:'從 0 到 1', name:'讓第一批顧客認識你', pic:'pet', brief:'剛起步的寵物鮮食品牌，沒人聽過也沒有預算。先讓第一批飼主知道你、願意試試看。', set:{topic:'pet', aud:'petown', goal:'aware', strat:'use'}},
+  {stage:'導入期', goal:'搶首購', name:'新生第一週', pic:'brunch', brief:'開學第一週是早午餐店搶新客的黃金期，讓大一新生第一次就選你。', set:{topic:'brunch', aud:'fresh', goal:'first', strat:'use'}},
+  {stage:'成長期', goal:'做出差異', name:'伴手禮不只是禮物', pic:'gift', brief:'觀光客買伴手禮常常只看價格。讓台中文創伴手禮變成「非帶不可」的城市記憶。', set:{topic:'gift', aud:'tourist', strat:'emo', tactics:['地方限定']}},
+  {stage:'成長期', goal:'擴大參與', name:'校慶不只是園遊會', pic:'fest', brief:'今年校慶想吸引附近的親子家庭一起參加，報名人數要比去年多一倍。', set:{topic:'fest', aud:'family', goal:'signup', hats:['blue','black']}},
+  {stage:'擴張期', goal:'品牌延伸', name:'新口味上市', pic:'launch', brief:'秋雅即飲醋想推出新口味，打進原本不太喝醋的上班族。新品要有話題，也不能稀釋原本的品牌印象。', set:{topic:'chiuya', aud:'office', goal:'first', strat:'taste'}},
+  {stage:'成熟期', goal:'提高回購', name:'深夜的一碗粥', pic:'congee', brief:'十二月粥品營業到凌晨，砂鍋粥現點現煮。讓加班到深夜的上班族把它當成下班後的固定陪伴。', set:{topic:'congee', aud:'office', goal:'repeat', strat:'emo', tactics:['陪伴感']}},
+  {stage:'成熟期', goal:'品牌年輕化', name:'老品牌的新酷感', pic:'bifido', brief:'比菲多是很多人從小喝到大的乳酸飲料。讓滑手機長大的 Z 世代也覺得它很酷、願意拍照分享。', set:{topic:'bifido', aud:'gz', strat:'fun'}},
+  {stage:'停滯期', goal:'重新定位', name:'冷門變熱門', pic:'books', brief:'學校附近的獨立書店生意清淡。讓滑手機長大的 Z 世代願意走進來，還想拍照分享。', set:{topic:'books', aud:'gz', strat:'taste'}},
+  {stage:'危機期', goal:'挽回信任', name:'一則負評爆了', pic:'crisis', brief:'早午餐店一則「等了 50 分鐘還上錯餐」的負評在 Threads 被瘋傳。用誠意回應，把危機變成轉機。', set:{topic:'brunch', aud:'gz', goal:'image', hats:['white','black']}}
+];
+
+const ALL_KEYS = SLOTS.map(s=>s.key);
+let S = {role:'liang', topic:'bifido', customTopic:'', aud:'gz', goal:'share', strat:'fun', tactics:['反差驚喜','迷因梗'], orid:['O','R','I','D'], hats:['yellow','black'], fmt:'three'};
+const locks = {};
+let busy = false;
+
+function slotDef(k){return SLOTS.find(s=>s.key===k)}
+function itemsOf(k){
+  if(k==='tactics'){const st=STRATS.find(x=>x.id===S.strat); return (st?st.tactics:[]).map(t=>({id:t,name:t}));}
+  return slotDef(k).items;
+}
+function byId(k,id){return (k==='tactics'?itemsOf(k):slotDef(k).items).find(i=>i.id===id)}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function isSel(k,id){const v=S[k]; return Array.isArray(v)?v.includes(id):v===id}
+
+const store = {
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+let unlocked = store.get('plan-badges',[]);
+
+/* ---------- 卡槽 ---------- */
+function renderSlots(){
+  const box = document.getElementById('slots');
+  box.innerHTML = Object.keys(GROUPS).map(g=>{
+    const G=GROUPS[g];
+    const rows = SLOTS.filter(s=>s.group===g).map(s=>{
+      const its = itemsOf(s.key);
+      const chips = its.map(it=>{
+        const dot = s.hat ? `<span class="hat-dot" style="background:${HATS.find(h=>h.id===it.id).color}"></span>` : '';
+        const sub = it.desc && (s.key==='strat'||s.key==='orid'||s.hat) ? `<small>${esc(it.desc)}</small>` : it.tag ? `<small>${esc(it.tag)}</small>` : '';
+        return `<button type="button" class="chip${s.hat?' hat':''}" data-k="${s.key}" data-id="${esc(it.id)}" aria-pressed="${isSel(s.key,it.id)}" ${it.desc&&!sub?`title="${esc(it.desc)}"`:''}>${dot}<span>${esc(it.name)}${sub}</span></button>`;
+      }).join('');
+      const custom = s.custom ? `<div class="custom"><input id="customTopic" type="text" maxlength="30" placeholder="或輸入自己的題材，例如：系學會迎新茶會" value="${esc(S.customTopic)}"><button type="button" class="btn sm" id="useCustom">使用這個題材</button></div>` : '';
+      const ex = s.key==='strat' ? `<p class="strat-ex">課堂例子：${esc(STRATS.find(x=>x.id===S.strat).ex)}</p>` : '';
+      return `<div class="slot" data-slot="${s.key}">
+        <div class="slot-h"><h4>${s.label}<em>${s.hint}</em></h4>
+          <button type="button" class="btn sm" data-spin="${s.key}">🎲 抽</button></div>
+        <div class="chips">${chips}</div>${custom}${ex}</div>`;
+    }).join('');
+    return `<section class="group ${g}"><div class="group-h"><span class="tag">${G.tag}</span><h3>${G.name}</h3><small>${G.sub}</small></div>${rows}</section>`;
+  }).join('');
+}
+
+function pick(k,id){
+  const s = slotDef(k);
+  if(s.multi){
+    const arr = S[k].slice(); const i = arr.indexOf(id);
+    if(i>=0){ if(arr.length>(s.min||0)) arr.splice(i,1); else return toast(`${s.label}至少要留 ${s.min} 張`); }
+    else { arr.push(id); if(arr.length>s.multi) arr.shift(); }
+    S[k]=arr;
+  } else {
+    S[k]=id;
+    if(k==='strat'){ S.tactics=[]; }
+  }
+  update();
+}
+
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function randomValue(k){
+  const s=slotDef(k); const ids=itemsOf(k).map(i=>i.id);
+  if(k==='orid') return Math.random()<.6 ? ['O','R','I','D'] : shuffle(ids).slice(0,2+Math.floor(Math.random()*2)).sort((a,b)=>'ORID'.indexOf(a)-'ORID'.indexOf(b));
+  if(s.multi){ const n = k==='hats' ? 1+Math.floor(Math.random()*2) : 1+Math.floor(Math.random()*2); return shuffle(ids).slice(0,n); }
+  let v = rand(ids); if(ids.length>1) while(v===S[k]) v=rand(ids); return v;
+}
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function spin(keys){
+  if(busy) return;
+  keys = keys.filter(k=>!locks[k]);
+  if(!keys.length) return toast('這一排是任務條件，結束任務後才能抽');
+  // 策略換了、關鍵詞沒鎖時一併重抽
+  const finals = {};
+  keys.forEach(k=>{ if(k!=='tactics') finals[k]=randomValue(k); });
+  if('strat' in finals && !locks.tactics && !keys.includes('tactics')) keys.push('tactics');
+  const apply = ()=>{
+    Object.assign(S, finals);
+    if(keys.includes('tactics')) S.tactics = randomValue('tactics');
+    else if('strat' in finals) S.tactics = [];
+    update();
+  };
+  if(reduce){ apply(); return; }
+  busy = true; let n = 0;
+  const timer = setInterval(()=>{
+    document.querySelectorAll('.chip.flash').forEach(c=>c.classList.remove('flash'));
+    keys.forEach(k=>{ const cs=document.querySelectorAll(`.slot[data-slot="${k}"] .chip`); if(cs.length) rand([...cs]).classList.add('flash'); });
+    if(++n>=9){ clearInterval(timer); busy=false; document.querySelectorAll('.chip.flash').forEach(c=>c.classList.remove('flash')); apply(); }
+  }, 70);
+}
+
+/* ---------- 指令 ---------- */
+function topicName(){ return S.topic==='custom' ? (S.customTopic.trim()||'（請輸入題材）') : byId('topic',S.topic).name; }
+function buildPrompt(html){
+  const m = t => html ? `<mark>${esc(t)}</mark>` : t;
+  const sec = (c,t) => html ? `<span class="sec ${c}">${t}</span>` : `【${t}】`;
+  const role = byId('role',S.role), aud = byId('aud',S.aud), goal = byId('goal',S.goal), st = STRATS.find(x=>x.id===S.strat), fmt = byId('fmt',S.fmt);
+  const topic = topicName();
+  const tac = S.tactics.length ? `，重點放在「${S.tactics.map(m).join('」與「')}」` : '';
+  const L = [];
+  L.push(sec('sa','A｜角色'));
+  L.push(role.famous ? `請你用${m(role.name)}的思維來發想企劃。${role.name}：${role.desc}。` : `請你扮演一位${m(role.name)}，${role.desc}。`);
+  L.push('');
+  L.push(sec('st','T｜目標'));
+  L.push(`我要為「${m(topic)}」發想一檔行銷企劃。`);
+  L.push(`・目標受眾：${m(aud.name)}（${aud.desc}）`);
+  L.push(`・企劃目的：${m(goal.name)}`);
+  L.push(`・切入策略：${m(st.name)}策略，也就是${st.def}${tac}。`);
+  L.push('');
+  L.push(sec('sm','M｜方法'));
+  let step = 1;
+  const od = ORID.filter(o=>S.orid.includes(o.id));
+  L.push(`${step++}. 先用有感文案架構 ORID，站在${aud.name}的角度拆解他們接觸「${topic}」的經驗：`);
+  od.forEach(o=>L.push(`   ${m(o.id+' '+o.name)}：${o.qs.join('')}`));
+  L.push(`${step++}. 根據上面的拆解，用${st.name}策略發想企劃方向，每個方向用一句話說出核心創意。`);
+  if(S.hats.length){
+    const hs = HATS.filter(h=>S.hats.includes(h.id));
+    L.push(`${step++}. 再分別戴上${hs.map(h=>m(h.name)).join('、')}檢視企劃，並依檢視結果修正：`);
+    hs.forEach(h=>L.push(`   ・${h.name}（${h.def}）：${h.ask}`));
+  }
+  L.push(`${step++}. 產出格式：${m(fmt.name)}，${fmt.desc}。`);
+  L.push(`${step++}. 請用繁體中文與台灣在地用語。不確定的數據或案例請標示「需查證」，不要自行編造。`);
+  return L.join('\n');
+}
+
+function renderBadges(){
+  const now = BADGES.filter(b=>b.test(S)).map(b=>b.id);
+  const fresh = now.filter(id=>!unlocked.includes(id));
+  if(fresh.length){ unlocked = unlocked.concat(fresh); store.set('plan-badges',unlocked); toast('🏅 解鎖成就：'+fresh.map(id=>BADGES.find(b=>b.id===id).name).join('、')); }
+  document.getElementById('badges').innerHTML = BADGES.map(b=>{
+    const on = now.includes(b.id), got = unlocked.includes(b.id);
+    return `<span class="badge${on?' on':''}" title="${esc(b.how)}">${got?(on?'🏅 ':'✓ '):'？ '}${got?b.name:b.how}</span>`;
+  }).join('');
+  document.getElementById('badgeCount').textContent = `已解鎖 ${unlocked.length} / ${BADGES.length}`;
+}
+
+function update(){
+  renderSlots();
+  document.getElementById('prompt').innerHTML = buildPrompt(true);
+  renderBadges();
+}
+
+let tt;
+function toast(t){const el=document.getElementById('toast'); el.textContent=t; el.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('show'),2200);}
+
+/* ---------- 事件 ---------- */
+document.getElementById('slots').addEventListener('click',e=>{
+  const c=e.target.closest('.chip'); if(c){ pick(c.dataset.k,c.dataset.id); return; }
+  const sp=e.target.closest('[data-spin]'); if(sp){ spin([sp.dataset.spin]); return; }
+  if(e.target.id==='useCustom'){ const v=document.getElementById('customTopic').value.trim(); if(!v) return toast('先輸入一個題材'); S.customTopic=v; S.topic='custom'; update(); }
+});
+document.getElementById('slots').addEventListener('keydown',e=>{ if(e.target.id==='customTopic'&&e.key==='Enter'){ e.preventDefault(); document.getElementById('useCustom').click(); }});
+document.getElementById('spinAll').addEventListener('click',()=>spin(ALL_KEYS.slice()));
+document.getElementById('endMission').addEventListener('click',()=>{ ALL_KEYS.forEach(k=>locks[k]=false); document.getElementById('missionBar').hidden=true; toast('已結束任務，可以自由轉蛋'); });
+document.getElementById('copyBtn').addEventListener('click',()=>{
+  const text = buildPrompt(false);
+  const fallback = ()=>{ const r=document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast('已選取指令，請按 Ctrl+C／⌘C 複製'); };
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(()=>toast('已複製，貼到 AI 對話框就能用'),fallback); else fallback();
+});
+/* ---------- 16:9 圖檔 ---------- */
+function wrapText(ctx,text,maxW){
+  const out=[]; let line='';
+  for(const ch of text){
+    const t=line+ch;
+    if(ctx.measureText(t).width>maxW && line){ out.push(line); line=/\s/.test(ch)?'':ch; }
+    else line=t;
+  }
+  out.push(line); return out;
+}
+function rrect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+async function makePng(){
+  const DISP='"LXGW WenKai TC","Noto Sans TC",sans-serif', BODY='"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
+  try{ await Promise.all(['700 40px "LXGW WenKai TC"','400 24px "Noto Sans TC"','700 24px "Noto Sans TC"','900 24px "Noto Sans TC"'].map(f=>document.fonts.load(f,'企劃指令ATM'))); }catch(e){}
+  const W=1920,H=1080, cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  const c=cv.getContext('2d');
+  const NAVY='#3f416f', TAN='#a69072', ORG='#dc9a4c', INK='#23243a', MUTED='#5f6178', YEL='#f1d93c', COL={A:'#3f416f',T:'#c27a2c',M:'#2f7d6a'};
+  c.fillStyle='#f3f3f7'; c.fillRect(0,0,W,H);
+  // 左欄：卡片組合
+  const LW=640; c.fillStyle=NAVY; c.fillRect(0,0,LW,H);
+  c.fillStyle=TAN; c.globalAlpha=.55; c.beginPath(); c.arc(-20,-30,170,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  c.fillStyle=YEL; c.font='700 22px '+BODY; c.textBaseline='top'; c.fillText('中興大學行銷學系 ・ #AI品牌企劃發想',64,70);
+  c.fillStyle='#fff'; c.font='700 58px '+DISP; c.fillText('企劃指令卡',64,108);
+  const st=STRATS.find(x=>x.id===S.strat);
+  const rows=[
+    ['A','角色',byId('role',S.role).name],
+    ['T','題材',topicName()],
+    ['T','受眾',byId('aud',S.aud).name],
+    ['T','目的',byId('goal',S.goal).name],
+    ['T','策略',st.name+(S.tactics.length?'｜'+S.tactics.join('、'):'')],
+    ['M','ORID',S.orid.join(' ')],
+    ['M','思考帽',HATS.filter(h=>S.hats.includes(h.id)).map(h=>h.name).join('、')||'—'],
+    ['M','格式',byId('fmt',S.fmt).name]
+  ];
+  let y=212;
+  rows.forEach(([g,l,v])=>{
+    c.fillStyle='rgba(255,255,255,.08)'; rrect(c,48,y,LW-96,82,14); c.fill();
+    c.fillStyle=COL[g]==='#3f416f'?'#6a6db0':COL[g]; rrect(c,64,y+21,40,40,8); c.fill();
+    c.fillStyle='#fff'; c.font='900 24px '+BODY; c.textAlign='center'; c.fillText(g,84,y+28); c.textAlign='left';
+    c.fillStyle='rgba(255,255,255,.7)'; c.font='500 19px '+BODY; c.fillText(l,124,y+14);
+    c.fillStyle=YEL; c.font='700 26px '+BODY;
+    let t=v; while(c.measureText(t).width>LW-96-90 && t.length>2) t=t.slice(0,-2)+'…';
+    c.fillText(t,124,y+40);
+    y+=94;
+  });
+  // 右欄：完整指令
+  const X=LW+64, RW=W-X-64, TOP=70, BOT=H-80;
+  c.fillStyle=TAN; rrect(c,X,TOP-6,250,52,26); c.fill();
+  c.fillStyle='#fff'; c.font='700 28px '+DISP; c.fillText('我的企劃指令',X+30,TOP+4);
+  c.fillStyle='#fff'; rrect(c,X,TOP+66,RW,BOT-TOP-66,18); c.fill();
+  c.strokeStyle=ORG; c.lineWidth=4; c.stroke();
+  const lines=buildPrompt(false).split('\n'), boxX=X+36, boxW=RW-72, boxTop=TOP+96, boxH=BOT-boxTop-24;
+  let fs=26, laid;
+  for(;fs>=13;fs--){
+    c.font='400 '+fs+'px '+BODY; laid=[];
+    lines.forEach(l=>{ const sec=/^【(.)｜/.exec(l); if(sec){laid.push({sec:sec[1],text:l.replace(/[【】]/g,'')});} else if(!l){laid.push({gap:true});} else wrapText(c,l,boxW).forEach(t=>laid.push({text:t})); });
+    const h=laid.reduce((a,o)=>a+(o.gap?fs*.6:o.sec?fs*1.9:fs*1.55),0);
+    if(h<=boxH) break;
+  }
+  let yy=boxTop;
+  laid.forEach(o=>{
+    if(o.gap){ yy+=fs*.6; return; }
+    if(o.sec){ c.font='900 '+fs+'px '+BODY; const w=c.measureText(o.text).width+fs; c.fillStyle=COL[o.sec]; rrect(c,boxX,yy,w,fs*1.5,6); c.fill(); c.fillStyle='#fff'; c.fillText(o.text,boxX+fs/2,yy+fs*.22); yy+=fs*1.9; return; }
+    c.fillStyle=INK; c.font='400 '+fs+'px '+BODY; c.fillText(o.text,boxX,yy); yy+=fs*1.55;
+  });
+  c.fillStyle=MUTED; c.font='400 18px '+BODY; c.fillText('AI 企劃發想工坊 ・ ATM：A 角色 ・ T 目標 ・ M 方法',X,H-52);
+  return cv;
+}
+document.getElementById('pngBtn').addEventListener('click',async e=>{
+  const btn=e.currentTarget; btn.disabled=true; btn.textContent='產生中…';
+  try{
+    const cv=await makePng(); lastCanvas=cv; const url=cv.toDataURL('image/png');
+    document.getElementById('pngImg').src=url;
+    const dl=document.getElementById('pngDl'); dl.href=url; dl.download=`企劃指令卡_${topicName()}.png`;
+    document.getElementById('pngModal').hidden=false; document.getElementById('pngClose').focus();
+  }catch(err){ toast('圖檔產生失敗，請再試一次'); }
+  btn.disabled=false; btn.textContent='下載 16:9 圖檔';
+});
+let lastCanvas=null, dlApi=null;
+if(window.claude&&window.claude.use) window.claude.use('downloads').then(d=>{dlApi=d}).catch(()=>{});
+document.getElementById('pngDl').addEventListener('click',e=>{
+  if(!dlApi||!lastCanvas) return; // 一般網站：用瀏覽器原生下載
+  e.preventDefault();
+  lastCanvas.toBlob(blob=>{
+    dlApi.save({filename:`企劃指令卡_${topicName()}.png`, data:blob})
+      .then(()=>toast('已下載圖檔'))
+      .catch(err=>{ if(err&&err.code!=='declined') toast('這裡無法直接下載，請在圖片上按右鍵另存'); });
+  },'image/png');
+});
+document.getElementById('pngClose').addEventListener('click',()=>{document.getElementById('pngModal').hidden=true;});
+document.getElementById('pngModal').addEventListener('click',e=>{ if(e.target.id==='pngModal') e.target.hidden=true; });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.getElementById('pngModal').hidden=true; });
+
+/* ---------- 分頁 ---------- */
+const VIEWS=['build','bank','mission'];
+function show(v){
+  if(!VIEWS.includes(v)) v='build';
+  VIEWS.forEach(x=>{ document.getElementById('view-'+x).hidden = x!==v; document.getElementById('tab-'+x).setAttribute('aria-selected', x===v); });
+}
+document.querySelector('.nav').addEventListener('click',e=>{ const b=e.target.closest('[data-view]'); if(!b) return; show(b.dataset.view); try{history.replaceState(null,'','#'+b.dataset.view)}catch(_){location.hash=b.dataset.view} });
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+
+/* ---------- 素材圖鑑 ---------- */
+document.getElementById('stratCards').innerHTML = STRATS.map((s,i)=>`
+  <div class="card strat"><span class="frame">${s.name}</span>
+    <p class="def">${s.def}</p>
+    <p class="ex">${s.ex}</p>
+    <div class="words">${s.tactics.map(t=>`<span>${t}</span>`).join('')}</div>
+    <div class="guess"><label class="note" for="g${i}">💬 猜猜看是什麼品牌</label><input id="g${i}" type="text" placeholder="寫下你的答案"><button type="button" class="btn sm navy" data-ans="${i}">對答案</button></div>
+    <div class="reveal" id="ans${i}" hidden></div>
+  </div>`).join('');
+document.getElementById('stratCards').addEventListener('click',e=>{
+  const b=e.target.closest('[data-ans]'); if(!b) return;
+  const i=+b.dataset.ans, a=STRATS[i].ans, g=document.getElementById('g'+i).value.trim().toLowerCase();
+  let verdict='';
+  if(a.open) verdict = g ? `<span class="ok">你的答案：${esc(g)}</span><br>` : '';
+  else if(g) verdict = a.alias.some(x=>g.includes(x.toLowerCase())) ? '<span class="ok">🎉 答對了！</span><br>' : `你猜的是「${esc(g)}」，再看看答案：<br>`;
+  const box=document.getElementById('ans'+i);
+  box.innerHTML = `${verdict}<b>${a.open?'':'答案：'}${a.brand}</b>${a.why}`; box.hidden=false;
+});
+document.getElementById('stratCards').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.matches('.guess input')){ e.preventDefault(); e.target.nextElementSibling.click(); }});
+
+document.getElementById('oridCards').innerHTML = ORID.map(o=>`
+  <div class="oq"><h4><b>${o.id}</b>${o.en} ${o.name}</h4>
+    <ul>${o.qs.map((q,j)=>`<li><button type="button" data-orid="${o.id}" data-q="${j}" aria-pressed="false">${q}</button></li>`).join('')}</ul>
+    <div class="case" id="case-${o.id}">點上面任一句問句，看一個代表的品牌案例。</div>
+    <p class="use">${o.use}</p></div>`).join('');
+document.getElementById('oridCards').addEventListener('click',e=>{
+  const b=e.target.closest('[data-orid]'); if(!b) return;
+  const o=ORID.find(x=>x.id===b.dataset.orid), c=o.cases[+b.dataset.q];
+  b.closest('ul').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', x===b));
+  document.getElementById('case-'+o.id).innerHTML = `<b>${esc(c[0])}</b>｜${esc(c[1])}`;
+});
+
+const hatSvg = c => `<svg viewBox="0 0 58 40" aria-hidden="true"><ellipse cx="29" cy="30" rx="26" ry="8" fill="${c}" stroke="var(--ink)" stroke-width="2"/><path d="M15 29 C15 10 43 10 43 29 Z" fill="${c}" stroke="var(--ink)" stroke-width="2"/><path d="M15.5 23 H42.5" stroke="var(--ink)" stroke-width="2" fill="none"/></svg>`;
+const hatIdx = {};
+document.getElementById('hatCards').innerHTML = HATS.map(h=>`
+  <button type="button" class="card hatc" data-hat="${h.id}">${hatSvg(h.color)}<div><h4>${h.name}</h4><p>${h.def}</p><p class="ask">追問：${h.ask}</p></div>
+    <div class="act" id="act-${h.id}">👆 點一下，推薦一個品牌小行動</div></button>`).join('');
+document.getElementById('hatCards').addEventListener('click',e=>{
+  const b=e.target.closest('[data-hat]'); if(!b) return;
+  const h=HATS.find(x=>x.id===b.dataset.hat); const i=hatIdx[h.id]=((hatIdx[h.id]??-1)+1)%h.acts.length;
+  const [brand,act]=h.acts[i];
+  document.getElementById('act-'+h.id).innerHTML = `<b>${h.name}小行動・${esc(brand)}</b>｜${esc(act)}<br><span class="note">再點一次換下一個品牌（${i+1}/${h.acts.length}）</span>`;
+});
+
+/* ---------- 任務 ---------- */
+/* Q 版任務插圖：同一個大頭角色＋各任務道具 */
+const PIC = {
+  pet:{bg:'#e6f2ea', hair:'#5a3b2b', shirt:'#2f7d6a', face:'smile', prop:`<g transform="translate(112 64)"><ellipse cx="0" cy="22" rx="24" ry="7" fill="#c27a2c"/><rect x="-22" y="12" width="44" height="12" rx="5" fill="#dc9a4c"/><circle cx="0" cy="-6" r="17" fill="#d8a26b"/><ellipse cx="-14" cy="-18" rx="6" ry="10" fill="#8a5a36"/><ellipse cx="14" cy="-18" rx="6" ry="10" fill="#8a5a36"/><circle cx="-6" cy="-8" r="2.2" fill="#23243a"/><circle cx="6" cy="-8" r="2.2" fill="#23243a"/><ellipse cx="0" cy="-1" rx="3.5" ry="2.5" fill="#23243a"/><path d="M-4 3 Q0 7 4 3" stroke="#23243a" stroke-width="1.5" fill="none"/></g><path d="M100 22 l3 6 6 1 -5 4 1 6 -5 -3 -5 3 1 -6 -5 -4 6 -1z" fill="#f1d93c"/>`},
+  brunch:{bg:'#fbefe0', hair:'#23243a', shirt:'#3f416f', face:'smile', prop:`<g transform="translate(114 66)"><ellipse cx="0" cy="12" rx="30" ry="9" fill="#ffffff" stroke="#c9c9d6" stroke-width="2"/><rect x="-20" y="-16" width="26" height="24" rx="7" fill="#e3a65a"/><rect x="-17" y="-12" width="20" height="18" rx="5" fill="#f6d39a"/><ellipse cx="14" cy="4" rx="13" ry="8" fill="#ffffff" stroke="#e8e0cf" stroke-width="1.5"/><circle cx="14" cy="4" r="4.5" fill="#f1b72c"/></g><text x="96" y="30" font-size="16" font-weight="700" fill="#c27a2c" font-family="sans-serif">NEW!</text>`},
+  gift:{bg:'#f6ecf3', hair:'#7a4b2a', shirt:'#c27a2c', face:'smile', prop:`<g transform="translate(114 62)"><rect x="-22" y="-12" width="44" height="36" rx="4" fill="#3f416f"/><rect x="-25" y="-20" width="50" height="12" rx="3" fill="#5b5e9a"/><rect x="-4" y="-20" width="8" height="44" fill="#f1d93c"/><path d="M0 -20 C-14 -36 -22 -22 0 -20 C22 -22 14 -36 0 -20" fill="#f1d93c"/></g>`},
+  fest:{bg:'#e8e8f3', hair:'#23243a', shirt:'#dc9a4c', face:'smile', prop:`<g><path d="M104 70 L100 40 M118 70 L120 32 M132 70 L138 44" stroke="#5f6178" stroke-width="1.5"/><ellipse cx="100" cy="32" rx="10" ry="12" fill="#e2483d"/><ellipse cx="120" cy="22" rx="10" ry="12" fill="#f1d93c"/><ellipse cx="138" cy="36" rx="10" ry="12" fill="#2f6bd1"/><path d="M96 78 h46 v20 h-46z" fill="#ffffff" stroke="#3f416f" stroke-width="2"/><text x="107" y="93" font-size="11" font-weight="700" fill="#3f416f" font-family="sans-serif">校慶!</text></g>`},
+  launch:{bg:'#eef4dc', hair:'#3b2a20', shirt:'#6f6a24', face:'wow', prop:`<g transform="translate(116 60)"><rect x="-11" y="-30" width="22" height="10" rx="3" fill="#23243a"/><path d="M-13 -20 h26 v46 a6 6 0 0 1 -6 6 h-14 a6 6 0 0 1 -6 -6z" fill="#b9d36a"/><rect x="-13" y="-4" width="26" height="16" fill="#ffffff"/><text x="-9" y="8" font-size="9" font-weight="700" fill="#6f6a24" font-family="sans-serif">NEW</text></g><path d="M140 26 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z M96 30 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5z" fill="#dc9a4c"/>`},
+  congee:{bg:'#ece9f6', hair:'#23243a', shirt:'#5f6178', face:'sleepy', prop:`<g transform="translate(116 70)"><path d="M-28 -6 h56 a28 22 0 0 1 -56 0z" fill="#3f416f"/><ellipse cx="0" cy="-6" rx="28" ry="6" fill="#f6f1e4"/><circle cx="-8" cy="-7" r="2.5" fill="#e2483d"/><circle cx="7" cy="-6" r="2" fill="#5ccf8f"/><path d="M-10 -16 q-5 -8 0 -16 M0 -16 q-5 -8 0 -16 M10 -16 q-5 -8 0 -16" stroke="#a69072" stroke-width="2" fill="none" stroke-linecap="round"/></g><circle cx="140" cy="20" r="9" fill="#f1d93c"/><circle cx="144" cy="17" r="8" fill="#ece9f6"/>`},
+  bifido:{bg:'#fde9ec', hair:'#4a2d1e', shirt:'#e2483d', face:'smile', prop:`<g transform="translate(116 62)"><path d="M-9 -26 h18 v6 c6 4 8 10 8 18 v26 a6 6 0 0 1 -6 6 h-22 a6 6 0 0 1 -6 -6 v-26 c0 -8 2 -14 8 -18z" fill="#ffffff" stroke="#e2483d" stroke-width="2"/><rect x="-9" y="-30" width="18" height="6" rx="2" fill="#e2483d"/><rect x="-15" y="0" width="30" height="12" fill="#e2483d"/><rect x="-14" y="-14" width="11" height="6" rx="2" fill="#23243a"/><rect x="3" y="-14" width="11" height="6" rx="2" fill="#23243a"/><path d="M-3 -11 h6" stroke="#23243a" stroke-width="2"/></g><text x="94" y="28" font-size="14" font-weight="700" fill="#e2483d" font-family="sans-serif">COOL</text>`},
+  books:{bg:'#f1ece3', hair:'#23243a', shirt:'#7a6648', face:'smile', prop:`<g transform="translate(116 70)"><rect x="-26" y="6" width="52" height="12" rx="2" fill="#3f416f"/><rect x="-22" y="-6" width="46" height="12" rx="2" fill="#dc9a4c"/><rect x="-24" y="-18" width="44" height="12" rx="2" fill="#2f7d6a"/><path d="M-14 -22 l14 -14 14 14" fill="none" stroke="#a69072" stroke-width="2"/><path d="M-22 -22 l22 -10 22 10 v-8 l-22 -10 -22 10z" fill="#ffffff" stroke="#23243a" stroke-width="1.5"/></g>`},
+  crisis:{bg:'#fde8e4', hair:'#23243a', shirt:'#3f416f', face:'sweat', prop:`<g transform="translate(116 64)"><rect x="-16" y="-28" width="32" height="54" rx="6" fill="#23243a"/><rect x="-13" y="-22" width="26" height="40" rx="2" fill="#ffffff"/><rect x="-10" y="-18" width="20" height="5" rx="2" fill="#e2483d"/><rect x="-10" y="-9" width="16" height="3" rx="1.5" fill="#c9c9d6"/><rect x="-10" y="-3" width="18" height="3" rx="1.5" fill="#c9c9d6"/><text x="-7" y="13" font-size="10" fill="#e2483d" font-family="sans-serif">★☆☆</text></g><circle cx="140" cy="24" r="11" fill="#e2483d"/><text x="136" y="30" font-size="15" font-weight="900" fill="#ffffff" font-family="sans-serif">!</text>`}
+};
+function chibi(k){
+  const p=PIC[k];
+  const eyes = p.face==='sleepy' ? `<path d="M46 52 q4 3 8 0 M66 52 q4 3 8 0" stroke="#23243a" stroke-width="2.2" fill="none" stroke-linecap="round"/>`
+    : p.face==='wow' ? `<circle cx="50" cy="52" r="4" fill="#23243a"/><circle cx="70" cy="52" r="4" fill="#23243a"/><circle cx="51.5" cy="50.5" r="1.3" fill="#ffffff"/><circle cx="71.5" cy="50.5" r="1.3" fill="#ffffff"/>`
+    : `<circle cx="50" cy="52" r="3.4" fill="#23243a"/><circle cx="70" cy="52" r="3.4" fill="#23243a"/><circle cx="51.2" cy="50.8" r="1.1" fill="#ffffff"/><circle cx="71.2" cy="50.8" r="1.1" fill="#ffffff"/>`;
+  const mouth = p.face==='wow' ? `<ellipse cx="60" cy="63" rx="3.5" ry="4" fill="#b2412f"/>` : p.face==='sweat' ? `<path d="M54 64 q6 -4 12 0" stroke="#23243a" stroke-width="2" fill="none" stroke-linecap="round"/>` : `<path d="M55 61 q5 5 10 0" stroke="#23243a" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  const extra = p.face==='sweat' ? `<path d="M83 38 q4 7 0 10 q-4 -3 0 -10z" fill="#7cc4f2"/>` : '';
+  return `<svg class="pic" viewBox="0 0 160 100" role="img" aria-label="任務示意圖">
+    <rect width="160" height="100" rx="10" fill="${p.bg}"/>
+    <ellipse cx="60" cy="96" rx="34" ry="5" fill="#000000" opacity=".08"/>
+    <path d="M38 96 q0 -24 22 -24 q22 0 22 24z" fill="${p.shirt}"/>
+    <circle cx="60" cy="52" r="26" fill="#ffe2c8"/>
+    <path d="M34 52 q0 -30 26 -30 q26 0 26 30 q-6 -14 -18 -16 q-10 6 -24 4 q-8 4 -10 12z" fill="${p.hair}"/>
+    ${eyes}<ellipse cx="44" cy="60" rx="4.5" ry="2.8" fill="#f6a5a0" opacity=".7"/><ellipse cx="76" cy="60" rx="4.5" ry="2.8" fill="#f6a5a0" opacity=".7"/>${mouth}${extra}
+    ${p.prop}</svg>`;
+}
+
+function ruleText(k,v){
+  const s=slotDef(k);
+  if(k==='tactics') return v.join('、');
+  if(Array.isArray(v)) return v.map(id=>s.items.find(i=>i.id===id).name).join('＋');
+  return s.items.find(i=>i.id===v).name;
+}
+document.getElementById('missions').innerHTML = MISSIONS.map((ms,i)=>`
+  <div class="card mission">${chibi(ms.pic)}
+    <div class="head"><span class="stage">${ms.stage}</span><span class="lv">${ms.goal}</span></div>
+    <h4>${ms.name}</h4><p class="brief">${ms.brief}</p>
+    <div class="rules">${Object.entries(ms.set).map(([k,v])=>`<span>${slotDef(k).label}：${ruleText(k,v)}</span>`).join('')}</div>
+    <button type="button" class="btn primary" data-mission="${i}">接受任務</button></div>`).join('');
+function startMission(i){
+  const ms = MISSIONS[i];
+  ALL_KEYS.forEach(k=>locks[k]=false);
+  Object.entries(ms.set).forEach(([k,v])=>{ S[k]=Array.isArray(v)?v.slice():v; locks[k]=true; });
+  if(!ms.set.tactics && ms.set.strat) S.tactics=[];
+  show('build'); try{history.replaceState(null,'','#build')}catch(_){}
+  update(); window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});
+  document.getElementById('missionText').textContent = `${ms.stage}｜${ms.name}`; document.getElementById('missionBar').hidden=false;
+  toast(`任務「${ms.name}」已帶入，按「全部轉蛋」補齊其他卡`);
+}
+document.getElementById('missions').addEventListener('click',e=>{ const b=e.target.closest('[data-mission]'); if(b) startMission(+b.dataset.mission); });
+document.getElementById('randMission').addEventListener('click',()=>startMission(Math.floor(Math.random()*MISSIONS.length)));
+
+update(); show(location.hash.slice(1));
+})();
+</script>
+</body>
+</html>
