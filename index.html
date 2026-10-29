@@ -123,7 +123,7 @@ main{padding-block:26px 80px}
 .out{position:sticky;top:calc(env(safe-area-inset-top,0px) + 60px);display:grid;gap:14px;min-width:0}
 .spin-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .spin-bar .btn.primary{font-size:16px;padding:10px 18px}
-.prompt-card{background:var(--panel);border:2.5px solid var(--org);border-radius:16px;overflow:hidden;min-width:0}
+.prompt-card{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 60px);background:var(--panel);border:2.5px solid var(--org);border-radius:16px;overflow:hidden;min-width:0}
 .prompt-h{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--org-soft);border-bottom:1px solid var(--line);flex-wrap:wrap}
 .prompt-h strong{margin-right:auto;font-size:14.5px}
 .prompt-body{padding:14px 16px;max-height:min(62vh,640px);overflow:auto;font-size:14px;line-height:1.75;white-space:pre-wrap;word-break:break-word}
@@ -203,7 +203,16 @@ main{padding-block:26px 80px}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 footer{padding-block:20px 30px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line)}
 
+/* 手機與平板：底部快捷列，免得組好的指令被埋在長頁面下方 */
+.dock{display:none}
 @media (max-width:980px){
+  .dock{display:flex;gap:8px;position:fixed;left:0;right:0;bottom:0;z-index:35;background:var(--panel);border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(0,0,0,.08);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+  .dock[hidden]{display:none}
+  .dock .btn{flex:1 1 0;justify-content:center;min-height:44px;font-size:15px;padding:8px 6px}
+  body.has-dock main{padding-bottom:120px}
+  body.has-dock footer{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  body.has-dock .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .out .spin-bar{display:none}
   .builder{grid-template-columns:minmax(0,1fr)}
   .out{position:static}
   .strats{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -214,6 +223,14 @@ footer{padding-block:20px 30px;color:var(--muted);font-size:12.5px;border-top:1p
   .mast{grid-template-columns:minmax(0,1fr)}
   .strats,.missions,.hats,.orid{grid-template-columns:minmax(0,1fr)}
   .prompt-body{max-height:none}
+}
+/* 觸控裝置：按鈕至少 40px 高、輸入框 16px 避免 iOS 自動放大 */
+@media (pointer:coarse){
+  .btn,.btn.sm{min-height:40px}
+  .chip{min-height:40px}
+  .nav button{min-height:44px}
+  .custom input,.strat .guess input{font-size:16px;min-height:40px}
+  .oq li button{padding:6px 8px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -226,7 +243,7 @@ footer{padding-block:20px 30px;color:var(--muted);font-size:12.5px;border-top:1p
     <div>
       <div class="eyebrow">中興大學行銷學系 ・ #AI品牌企劃發想</div>
       <h1>AI 企劃發想工坊</h1>
-      <p>把課堂上的四大策略、有感文案 ORID、六頂思考帽變成一副詞庫卡。用 ATM 架構抽卡、鎖卡、混搭，每一次組合都是一道新的企劃指令。</p>
+      <p>把課堂上的四大策略、有感文案 ORID、六頂思考帽變成一副詞庫卡。用 ATM 架構抽卡、換卡、混搭，每一次組合都是一道新的企劃指令。</p>
     </div>
     <div class="legend" aria-label="ATM 指令架構">
       <div class="key a"><b>A</b><span>角色<br>你是誰</span></div>
@@ -323,6 +340,12 @@ footer{padding-block:20px 30px;color:var(--muted);font-size:12.5px;border-top:1p
     <img id="pngImg" alt="組好的企劃指令卡，16:9 圖片">
     <p class="note">如果按「下載 PNG」沒有反應，請在圖片上按右鍵選「另存圖片」，手機請長按圖片儲存。</p>
   </div>
+</div>
+
+<div class="dock" id="dock" aria-label="快捷操作">
+  <button class="btn primary" type="button" id="dockSpin">🎲 全部轉蛋</button>
+  <button class="btn navy" type="button" id="dockView">看指令 ↓</button>
+  <button class="btn" type="button" id="dockCopy">複製</button>
 </div>
 
 <div class="toast" id="toast" role="status"></div>
@@ -455,7 +478,7 @@ const MISSIONS = [
 const ALL_KEYS = SLOTS.map(s=>s.key);
 let S = {role:'liang', topic:'bifido', customTopic:'', aud:'gz', goal:'share', strat:'fun', tactics:['反差驚喜','迷因梗'], orid:['O','R','I','D'], hats:['yellow','black'], fmt:'three'};
 const locks = {};
-let busy = false;
+let busy = false, booted = false;
 
 function slotDef(k){return SLOTS.find(s=>s.key===k)}
 function itemsOf(k){
@@ -579,7 +602,7 @@ function buildPrompt(html){
 function renderBadges(){
   const now = BADGES.filter(b=>b.test(S)).map(b=>b.id);
   const fresh = now.filter(id=>!unlocked.includes(id));
-  if(fresh.length){ unlocked = unlocked.concat(fresh); store.set('plan-badges',unlocked); toast('🏅 解鎖成就：'+fresh.map(id=>BADGES.find(b=>b.id===id).name).join('、')); }
+  if(fresh.length){ unlocked = unlocked.concat(fresh); store.set('plan-badges',unlocked); if(booted) toast('🏅 解鎖成就：'+fresh.map(id=>BADGES.find(b=>b.id===id).name).join('、')); }
   document.getElementById('badges').innerHTML = BADGES.map(b=>{
     const on = now.includes(b.id), got = unlocked.includes(b.id);
     return `<span class="badge${on?' on':''}" title="${esc(b.how)}">${got?(on?'🏅 ':'✓ '):'？ '}${got?b.name:b.how}</span>`;
@@ -604,6 +627,9 @@ document.getElementById('slots').addEventListener('click',e=>{
 });
 document.getElementById('slots').addEventListener('keydown',e=>{ if(e.target.id==='customTopic'&&e.key==='Enter'){ e.preventDefault(); document.getElementById('useCustom').click(); }});
 document.getElementById('spinAll').addEventListener('click',()=>spin(ALL_KEYS.slice()));
+document.getElementById('dockSpin').addEventListener('click',()=>spin(ALL_KEYS.slice()));
+document.getElementById('dockCopy').addEventListener('click',()=>document.getElementById('copyBtn').click());
+document.getElementById('dockView').addEventListener('click',()=>{ document.querySelector('.prompt-card').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'}); });
 document.getElementById('endMission').addEventListener('click',()=>{ ALL_KEYS.forEach(k=>locks[k]=false); document.getElementById('missionBar').hidden=true; toast('已結束任務，可以自由轉蛋'); });
 document.getElementById('copyBtn').addEventListener('click',()=>{
   const text = buildPrompt(false);
@@ -707,6 +733,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.getElemen
 const VIEWS=['build','bank','mission'];
 function show(v){
   if(!VIEWS.includes(v)) v='build';
+  document.getElementById('dock').hidden = v!=='build'; document.body.classList.toggle('has-dock', v==='build');
   VIEWS.forEach(x=>{ document.getElementById('view-'+x).hidden = x!==v; document.getElementById('tab-'+x).setAttribute('aria-selected', x===v); });
 }
 document.querySelector('.nav').addEventListener('click',e=>{ const b=e.target.closest('[data-view]'); if(!b) return; show(b.dataset.view); try{history.replaceState(null,'','#'+b.dataset.view)}catch(_){location.hash=b.dataset.view} });
@@ -811,7 +838,7 @@ function startMission(i){
 document.getElementById('missions').addEventListener('click',e=>{ const b=e.target.closest('[data-mission]'); if(b) startMission(+b.dataset.mission); });
 document.getElementById('randMission').addEventListener('click',()=>startMission(Math.floor(Math.random()*MISSIONS.length)));
 
-update(); show(location.hash.slice(1));
+update(); booted=true; show(location.hash.slice(1));
 })();
 </script>
 </body>
